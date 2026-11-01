@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-
+import { Apparition } from "@/components/apparition";
 import Link from "next/link";
 import { repo } from "@/lib/repository";
 import { seedDemo, DEMO_SLUG } from "@/lib/seed";
@@ -92,18 +92,27 @@ export function Vitrine({ slug }: { slug: string }) {
             </button>
           ))}
         </div>
-        <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-3 lg:grid-cols-4">
-          {filtres.map((l) => (
-            <Link key={l.id} href={`/${slug}/livre/${l.id}`}>
-              <Couverture titre={l.titre} className="h-48 w-full" />
-              <div className="mt-2 text-sm font-semibold">{l.titre}</div>
-              <div className="text-[13px] text-[#5B6475]">{l.auteur}</div>
-              <div className="mt-0.5 font-semibold text-[#0B6E4F]">{fcfa(l.prix)}</div>
-            </Link>
+                <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-3 lg:grid-cols-4">
+          {filtres.map((l, i) => (
+            <Apparition key={l.id} delai={Math.min(i, 8) * 0.04}>
+              <Link href={`/${slug}/livre/${l.id}`} className="block active:scale-[0.98] transition-transform">
+                <Couverture titre={l.titre} className="h-48 w-full" />
+                <div className="mt-2 text-sm font-semibold">{l.titre}</div>
+                <div className="text-[13px] text-[#5B6475]">{l.auteur}</div>
+                <div className="mt-0.5 font-semibold text-[#0B6E4F]">{fcfa(l.prix)}</div>
+              </Link>
+            </Apparition>
           ))}
         </div>
-        {filtres.length === 0 && (
-          <p className="mt-8 text-sm text-[#5B6475]">Aucun livre trouvé.</p>
+        {livres.length === 0 ? (
+          <div className="mt-10 rounded-2xl border border-dashed border-[#D9D6CC] bg-white p-8 text-center">
+            <p className="font-semibold">Le catalogue est vide pour l’instant</p>
+            <p className="mt-1 text-sm text-[#5B6475]">Les premiers livres arrivent bientôt.</p>
+          </div>
+        ) : (
+          filtres.length === 0 && (
+            <p className="mt-8 text-sm text-[#5B6475]">Aucun livre ne correspond à ta recherche.</p>
+          )
         )}
       </section>
     </main>

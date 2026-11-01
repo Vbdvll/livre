@@ -4,6 +4,7 @@ import Link from "next/link";
 import { repo } from "@/lib/repository";
 import { seedDemo, DEMO_SLUG } from "@/lib/seed";
 import { fcfa } from "@/lib/format";
+import { Apparition } from "@/components/apparition";
 import type { Boutique, Livre, Vente } from "@/lib/types";
 
 const sora = "font-[family-name:var(--font-sora)]";
@@ -73,12 +74,12 @@ export function Dashboard({ slug }: { slug: string }) {
         ))}
       </div>
 
-      <section className="px-5 py-2">
+        <Apparition className="px-5 py-2">
         <div className="rounded-2xl bg-[#14213D] p-4 text-white">
           <p className="text-[13px] opacity-75">Chiffre d’affaires · {libelle}</p>
           <p className={`${sora} mt-1.5 text-3xl font-semibold`}>{fcfa(stats.ca)}</p>
         </div>
-      </section>
+      </Apparition>
 
       <section className="grid grid-cols-3 gap-2.5 px-5 py-1">
         {[
