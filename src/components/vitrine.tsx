@@ -64,7 +64,7 @@ export function Vitrine({ slug }: { slug: string }) {
         </a>
         <div className="mt-6 flex items-end gap-3">
           {livres.slice(0, 3).map((l) => (
-            <Couverture key={l.id} titre={l.titre} className="h-[120px] w-[84px] !text-[10px]" />
+            <Couverture key={l.id} titre={l.titre} url={l.couverture} className="h-[120px] w-[84px] !text-[10px]" />
           ))}
           <span className="text-[13px] text-white/80">{livres.length} titres en stock</span>
         </div>
@@ -96,7 +96,7 @@ export function Vitrine({ slug }: { slug: string }) {
           {filtres.map((l, i) => (
             <Apparition key={l.id} delai={Math.min(i, 8) * 0.04}>
               <Link href={`/${slug}/livre/${l.id}`} className="block active:scale-[0.98] transition-transform">
-                <Couverture titre={l.titre} className="h-48 w-full" />
+                <Couverture titre={l.titre} url={l.couverture} className="h-48 w-full" />
                 <div className="mt-2 text-sm font-semibold">{l.titre}</div>
                 <div className="text-[13px] text-[#5B6475]">{l.auteur}</div>
                 <div className="mt-0.5 font-semibold text-[#0B6E4F]">{fcfa(l.prix)}</div>

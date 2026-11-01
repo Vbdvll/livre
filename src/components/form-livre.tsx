@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { repo } from "@/lib/repository";
 import { seedDemo, DEMO_SLUG } from "@/lib/seed";
+import { Couverture } from "@/components/couverture";
 import type { Livre } from "@/lib/types";
 
 const sora = "font-[family-name:var(--font-sora)]";
 const champ = "mt-1 h-12 w-full rounded-xl border border-[#D9D6CC] bg-white px-3.5 text-[15px]";
+type PropositionCouverture = { id: string; titre: string; couverture: string };
 
 export function FormLivre({ slug, id }: { slug: string; id: string }) {
   const router = useRouter();
@@ -16,6 +18,9 @@ export function FormLivre({ slug, id }: { slug: string; id: string }) {
   const [categories, setCategories] = useState<string[]>([]);
   const [titre, setTitre] = useState("");
   const [auteur, setAuteur] = useState("");
+  const [couverture, setCouverture] = useState("");
+  const [propositions, setPropositions] = useState<PropositionCouverture[]>([]);
+  const [recherche, setRecherche] = useState<"" | "en_cours" | "vide" | "erreur">("");
   const [categorie, setCategorie] = useState("");
   const [prix, setPrix] = useState("");
   const [stock, setStock] = useState("1");
@@ -31,6 +36,7 @@ export function FormLivre({ slug, id }: { slug: string; id: string }) {
       if (!l) return setIntrouvable(true);
       setTitre(l.titre);
       setAuteur(l.auteur);
+      setCouverture(l.couverture ?? "");
       setCategorie(l.categorie);
       setPrix(String(l.prix));
       setStock(String(l.stock));
@@ -40,6 +46,24 @@ export function FormLivre({ slug, id }: { slug: string; id: string }) {
   }, [slug, id, nouveau]);
 
   const valide = titre.trim() !== "" && Number(prix) >= 0 && prix !== "" && Number(stock) >= 0;
+
+  async function trouverCouverture() {
+    if (!titre.trim() || recherche === "en_cours") return;
+    setPropositions([]);
+    setRecherche("en_cours");
+
+    try {
+      const params = `titre=${encodeURIComponent(titre.trim())}&auteur=${encodeURIComponent(auteur.trim())}`;
+      const res = await fetch(`/api/couvertures?${params}`);
+      if (!res.ok) throw new Error("Recherche impossible");
+      const data = (await res.json()) as { resultats?: PropositionCouverture[] };
+      const resultats = (data.resultats ?? []).filter((proposition) => proposition.couverture);
+      setPropositions(resultats);
+      setRecherche(resultats.length ? "" : "vide");
+    } catch {
+      setRecherche("erreur");
+    }
+  }
 
   async function enregistrer() {
     if (!valide) return;
@@ -52,6 +76,7 @@ export function FormLivre({ slug, id }: { slug: string; id: string }) {
       prix: Number(prix),
       stock: Math.floor(Number(stock)),
       description: description.trim(),
+      couverture: couverture || undefined,
     };
     await repo.saveLivre(livre);
     router.push(`/${slug}/admin/livres`);
@@ -78,6 +103,60 @@ export function FormLivre({ slug, id }: { slug: string; id: string }) {
         <div>
           <label htmlFor="auteur" className="text-[13px] text-[#5B6475]">Auteur</label>
           <input id="auteur" value={auteur} onChange={(e) => setAuteur(e.target.value)} className={champ} />
+        </div>
+        <div className="-mt-2">
+          <button
+            type="button"
+            onClick={trouverCouverture}
+            disabled={!titre.trim() || recherche === "en_cours"}
+            className="flex h-12 w-full items-center justify-center rounded-xl border border-[#D9D6CC] bg-white px-4 font-semibold text-[#14213D] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {recherche === "en_cours" ? "Recherche en cours…" : "Trouver la couverture"}
+          </button>
+          {recherche === "vide" && (
+            <p className="mt-2 text-sm text-[#5B6475]">Aucune couverture trouvée.</p>
+          )}
+          {recherche === "erreur" && (
+            <p className="mt-2 text-sm text-[#5B6475]">La recherche a échoué. Réessaie.</p>
+          )}
+          {propositions.length > 0 && (
+            <div className="mt-3 grid grid-cols-3 gap-3">
+              {propositions.map((proposition) => (
+                <button
+                  key={proposition.id}
+                  type="button"
+                  onClick={() => {
+                    setCouverture(proposition.couverture);
+                    setPropositions([]);
+                    setRecherche("");
+                  }}
+                  className="min-h-11 min-w-0 rounded-xl border border-[#D9D6CC] bg-white p-2 text-left"
+                >
+                  <img
+                    src={proposition.couverture}
+                    alt={`Couverture : ${proposition.titre}`}
+                    loading="lazy"
+                    className="aspect-[2/3] w-full rounded-lg object-cover"
+                  />
+                  <span className="mt-2 block line-clamp-2 text-xs font-medium text-[#14213D]">
+                    {proposition.titre}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+          {couverture && (
+            <div className="mt-4 flex items-end gap-3">
+              <Couverture titre={titre} url={couverture} className="h-40 w-28" />
+              <button
+                type="button"
+                onClick={() => setCouverture("")}
+                className="flex min-h-11 items-center rounded-xl border border-[#D9D6CC] px-3 text-sm font-medium text-[#5B6475]"
+              >
+                Retirer la couverture
+              </button>
+            </div>
+          )}
         </div>
         <div>
           <label htmlFor="cat" className="text-[13px] text-[#5B6475]">Catégorie</label>

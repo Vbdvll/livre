@@ -14,6 +14,7 @@ export type Livre = {
   stock: number;
   categorie: string;
   description: string;
+  couverture?: string;
 };
 
 export type Paiement = "especes" | "wave" | "orange_money";

@@ -36,7 +36,7 @@ export function ListeLivres({ slug }: { slug: string }) {
             href={`/${slug}/admin/livres/${l.id}`}
             className="flex items-center gap-3 rounded-2xl bg-white p-3 shadow-sm"
           >
-            <Couverture titre={l.titre} className="h-[72px] w-[52px] shrink-0 !p-1 !text-[8px]" />
+            <Couverture titre={l.titre} url={l.couverture} className="h-[72px] w-[52px] shrink-0 !p-1 !text-[8px]" />
             <div className="min-w-0 flex-1">
               <div className="truncate text-sm font-semibold">{l.titre}</div>
               <div className="truncate text-[13px] text-[#5B6475]">{l.auteur}</div>

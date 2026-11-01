@@ -43,6 +43,7 @@ export function FicheLivre({ slug, id }: { slug: string; id: string }) {
         <div className="flex justify-center">
           <Couverture
             titre={livre.titre}
+            url={livre.couverture}
             className="h-[280px] w-[190px] !text-lg shadow-[0_16px_32px_rgba(20,33,61,.25)]"
           />
         </div>
