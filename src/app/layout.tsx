@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Sora } from "next/font/google";
 import "./globals.css";
 
@@ -9,7 +9,11 @@ export const metadata: Metadata = {
   title: "Livres",
   description: "Boutiques de livres, commandes par WhatsApp",
 };
-
+export const viewport: Viewport = {
+  themeColor: "#14213D",
+  width: "device-width",
+  initialScale: 1,
+};
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr">
