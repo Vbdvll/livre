@@ -2,7 +2,7 @@ import { repo } from "./repository";
 import type { Livre } from "./types";
 
 export const DEMO_SLUG = "teranga-livres";
-const NUMERO_WHATSAPP = "00221703117113"; // remplace par ton numéro
+const NUMERO_WHATSAPP = "221703117113"; // remplace par ton numéro
 
 type LivreDemo = Omit<Livre, "boutique" | "couverture">;
 
